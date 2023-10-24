@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    - name: update apt cache (Ubuntu)
+      apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: update dnf cache (CentOS)
+      shell: dnf makecache
+      when: ansible_distribution == "CentOS"
+
+    - name: Install dnf package manager (CentOS)
+      package:
+        name: dnf
+        state: present
+      when: ansible_distribution == "CentOS"
+
+  roles:
+    - role: ubuntu_server
+      when: ansible_distribution == "Ubuntu"
+    - role: centos_server
+      when: ansible_distribution == "CentOS"
